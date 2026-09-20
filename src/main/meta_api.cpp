@@ -23,7 +23,7 @@ plugin_info_t Plugin_info = {
 	"0.1",	// version
 	"2026/08/20",	// date
 	"Progress",	// author
-	"http://www.metamod.org/",	// url
+	"",	// url
 	"GUNS",	// logtag, all caps please
 	PT_ANYTIME,	// (when) loadable
 	PT_ANYPAUSE,	// (when) unloadable
@@ -57,17 +57,27 @@ C_DLLEXPORT int Meta_Attach(PLUG_LOADTIME /* now */,
 		META_FUNCTIONS *pFunctionTable, meta_globals_t *pMGlobals, 
 		gamedll_funcs_t *pGamedllFuncs) 
 {
-	if(!pMGlobals) {
-		LH_ERROR("Meta_Attach called with null pMGlobals");
+	if (!pFunctionTable) 
 		return(FALSE);
-	}
-	gpMetaGlobals=pMGlobals;
-	if(!pFunctionTable) {
-		LH_ERROR("Meta_Attach called with null pFunctionTable");
+
+	if (!pMGlobals) 
 		return(FALSE);
-	}
-	memcpy(pFunctionTable, &gMetaFunctionTable, sizeof(META_FUNCTIONS));
-	gpGamedllFuncs=pGamedllFuncs;
+
+    if (!pGamedllFuncs)
+        return(FALSE);
+	
+	gpMetaGlobals  = pMGlobals;
+	gpGamedllFuncs = pGamedllFuncs;
+	
+	memcpy(
+        pFunctionTable, 
+        &gMetaFunctionTable, 
+        sizeof(META_FUNCTIONS)
+    );
+
+    LH_LogInit();
+    LH_START("Guns Recoil %s attaching", Plugin_info.version);
+
 	return(TRUE);
 }
 
@@ -77,5 +87,9 @@ C_DLLEXPORT int Meta_Attach(PLUG_LOADTIME /* now */,
 C_DLLEXPORT int Meta_Detach(PLUG_LOADTIME /* now */, 
 		PL_UNLOAD_REASON /* reason */) 
 {
+    LH_START("Guns Recoil detaching");
+
+    LH_LogShutdown();
+
 	return(TRUE);
 }
