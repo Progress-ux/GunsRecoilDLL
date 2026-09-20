@@ -72,9 +72,9 @@ else()
     target_compile_definitions(${PROJECT_NAME} PRIVATE LH_DEBUG_LOG)
 endif()
 
-if(LOG_TO_CONSOLE)
+if(LOG_TO_REMOTE_SERVER)
     target_compile_definitions(${PROJECT_NAME} PRIVATE 
-        LH_LOG_TO_CONSOLE
+        LH_LOG_TO_REMOTE_SERVER
     )
 endif()
 
