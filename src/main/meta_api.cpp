@@ -1,7 +1,7 @@
 #include <extdll.h>			// always
 #include <meta_api.h>		// of course
 
-#include "sdk_util.h"		// UTIL_LogPrintf, etc
+#include "hooks/regame_loader.h"
 #include "util/logger.h"
 
 // Must provide at least one of these..
@@ -78,6 +78,16 @@ C_DLLEXPORT int Meta_Attach(PLUG_LOADTIME /* now */,
     LH_LogInit();
     LH_START("Guns Recoil %s attaching", Plugin_info.version);
 
+    if (!Initialize())
+    {
+        LH_ERROR("[Meta_Attach()] ReGameDll initialization failed!");
+        LH_LogShutdown();
+        return(FALSE);
+    }
+
+    LH_INFO("ReGameDLL initialization successful");
+    LH_INFO("Last Hope attached successfully");
+
 	return(TRUE);
 }
 
@@ -89,6 +99,7 @@ C_DLLEXPORT int Meta_Detach(PLUG_LOADTIME /* now */,
 {
     LH_START("Guns Recoil detaching");
 
+    Shutdown();
     LH_LogShutdown();
 
 	return(TRUE);
