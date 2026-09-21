@@ -86,7 +86,7 @@ C_DLLEXPORT int Meta_Attach(PLUG_LOADTIME /* now */,
     }
 
     LH_INFO("ReGameDLL initialization successful");
-    LH_INFO("Last Hope attached successfully");
+    LH_INFO("Guns Recoil attached successfully");
 
 	return(TRUE);
 }
