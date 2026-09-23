@@ -118,6 +118,13 @@ bool Initialize()
         return false;
     }
 
+    if (!RegisterKickBackHook())
+    {
+        UnregisterFireBullets3Hook();
+        ReGameContext::Reset();
+        return false;
+    }
+
     return true;
 }
 
