@@ -1,5 +1,6 @@
 add_library(core STATIC
     guns_recoil.cpp
+    recoil_math.cpp
 )
 
 target_include_directories(core PUBLIC
