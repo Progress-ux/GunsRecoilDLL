@@ -10,7 +10,7 @@ if(RELEASE)
     add_compile_options(-O2)
 else()
     add_compile_options(
-        -Og
+        -O2
         -ggdb3
     )
 
