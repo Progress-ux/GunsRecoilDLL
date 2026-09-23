@@ -2,6 +2,7 @@
 
 #include "abi/regame_player_abi.h"
 
+#include "core/recoil_math.h"
 #include "util/logger.h"
 
 void GunsRecoil_FireBullets3(
@@ -26,19 +27,19 @@ void GunsRecoil_FireBullets3(
     switch (weaponId)
     {
         case weapon_id::Glock18:
-            LH_DEBUG("[FireBullets3] Glock18");
+            recoil::ApplyVertical(vecDirShooting, 1.0f);
             break;
 
         case weapon_id::USP:
-            LH_DEBUG("[FireBullets3] USP");
+            recoil::ApplyVertical(vecDirShooting, 1.0f);
             break;
 
         case weapon_id::AK47:
-            LH_DEBUG("[FireBullets3] AK47");
+            recoil::ApplyVertical(vecDirShooting, 1.0f);
             break;
 
         case weapon_id::M4A1:
-            LH_DEBUG("[FireBullets3] M4A1");
+            recoil::ApplyVertical(vecDirShooting, 1.0f);
             break;
 
         default:
