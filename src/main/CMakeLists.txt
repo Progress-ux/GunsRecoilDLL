@@ -14,6 +14,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     hooks
     util
     hlsdk
+    config
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
