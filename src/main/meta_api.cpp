@@ -1,8 +1,12 @@
 #include <extdll.h>			// always
 #include <meta_api.h>		// of course
 
+#include "config/config_manager.h"
 #include "hooks/regame_loader.h"
 #include "util/logger.h"
+
+static ConfigManager g_config_manager;
+#define GUNS_RECOIL_CONFIG "guns-recoil-config.cfg"
 
 // Must provide at least one of these..
 static META_FUNCTIONS gMetaFunctionTable = {
@@ -29,30 +33,18 @@ plugin_info_t Plugin_info = {
 	PT_ANYPAUSE,	// (when) unloadable
 };
 
-// Global vars from metamod:
 meta_globals_t *gpMetaGlobals;		// metamod globals
 gamedll_funcs_t *gpGamedllFuncs;	// gameDLL function tables
 mutil_funcs_t *gpMetaUtilFuncs;		// metamod utility functions
 
-// Metamod requesting info about this plugin:
-//  ifvers			(given) interface_version metamod is using
-//  pPlugInfo		(requested) struct with info about plugin
-//  pMetaUtilFuncs	(given) table of utility functions provided by metamod
 C_DLLEXPORT int Meta_Query(char * /*ifvers */, plugin_info_t **pPlugInfo,
 		mutil_funcs_t *pMetaUtilFuncs) 
 {
-	// Give metamod our plugin_info struct
 	*pPlugInfo=&Plugin_info;
-	// Get metamod utility function table.
 	gpMetaUtilFuncs=pMetaUtilFuncs;
 	return(TRUE);
 }
 
-// Metamod attaching plugin to the server.
-//  now				(given) current phase, ie during map, during changelevel, or at startup
-//  pFunctionTable	(requested) table of function tables this plugin catches
-//  pMGlobals		(given) global vars from metamod
-//  pGamedllFuncs	(given) copy of function tables from game dll
 C_DLLEXPORT int Meta_Attach(PLUG_LOADTIME /* now */, 
 		META_FUNCTIONS *pFunctionTable, meta_globals_t *pMGlobals, 
 		gamedll_funcs_t *pGamedllFuncs) 
@@ -83,6 +75,11 @@ C_DLLEXPORT int Meta_Attach(PLUG_LOADTIME /* now */,
         LH_ERROR("[Meta_Attach()] ReGameDll initialization failed!");
         LH_LogShutdown();
         return(FALSE);
+    }
+
+    if (!ConfigManager_Load(&g_config_manager, GUNS_RECOIL_CONFIG))
+    {
+        LH_WARN("Failed load guns config");
     }
 
     LH_INFO("ReGameDLL initialization successful");
