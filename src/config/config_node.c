@@ -37,7 +37,7 @@ static ConfigNode* CreateNode(
     return node;
 }
 
-ConfigNode* GetOrCreateNode(
+ConfigNode* ConfigNodes_GetOrCreate(
     ConfigNodes* nodes,
     const char* name
 )
