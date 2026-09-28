@@ -1,62 +1,78 @@
 #include "config/config_manager.h"
 #include "config/config_node.h"
+#include "config/parser.h"
 #include "util/logger.h"
 
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
 
-static void trim(char* str)
+#define APPLY_FLOAT(field, keyname)                          \
+    if (strcmp(entry->key, keyname) == 0)                    \
+    {                                                        \
+        if (!Config_ParseFloat(entry->value, &(field).value))\
+            return 0;                                        \
+        (field).set = 1;                                     \
+        return 1;                                            \
+    }
+
+#define APPLY_INT(field, keyname)                            \
+    if (strcmp(entry->key, keyname) == 0)                    \
+    {                                                        \
+        if (!Config_ParseInt(entry->value, &(field).value))  \
+            return 0;                                        \
+        (field).set = 1;                                     \
+        return 1;                                            \
+    }
+
+static int ApplyEntry(
+    ConfigNode* node,
+    const ConfigEntry* entry
+)
 {
-    char* start = str;
-    char* end;
-
-    while (isspace((unsigned char)*start)) 
-        start++;
-
-    if (start != str) 
-        memmove(str, start, strlen(start) + 1);
-
-    if (*str == '\0') return;
-
-    end = str + strlen(str) - 1;
-
-    while (end >= str && isspace((unsigned char)*end)) 
-        end--;
-
-    end[1] = '\0';
-}
-
-static int ParseLine(const char* line, ConfigEntry* entry)
-{
-    if (!line || !entry)
+    if (!node || !entry)
         return 0;
 
-    memset(entry, 0, sizeof(*entry));
+    APPLY_FLOAT(
+        node->recoil.up_base,
+        "recoil.up_base"
+    );
 
-    const char* equal = strchr(line, '=');
+    APPLY_FLOAT(
+        node->recoil.lateral_base,
+        "recoil.lateral_base"
+    );
 
-    if (!equal)
-        return 0;
+    APPLY_FLOAT(
+        node->recoil.up_modifier,
+        "recoil.up_modifier"
+    );
 
-    size_t key_len = (size_t)(equal - line);
+    APPLY_FLOAT(
+        node->recoil.lateral_modifier,
+        "recoil.lateral_modifier"
+    );
 
-    if (key_len == 0 || key_len >= sizeof(entry->key))
-        return 0;
+    APPLY_FLOAT(
+        node->recoil.up_max,
+        "recoil.up_max"
+    );
 
-    memcpy(entry->key, line, key_len);
-    entry->key[key_len] = '\0';
+    APPLY_FLOAT(
+        node->recoil.lateral_max,
+        "recoil.lateral_max"
+    );
 
-    strncpy(entry->value, equal + 1, sizeof(entry->value) - 1);
-    entry->value[sizeof(entry->value) - 1] = '\0';
+    APPLY_INT(
+        node->recoil.direction_change,
+        "recoil.direction_change"
+    );
 
-    trim(entry->key);
-    trim(entry->value);
+    APPLY_FLOAT(
+        node->spread.spread,
+        "spread"
+    );
 
-    if (entry->key[0] == '\0' || entry->value[0] == '\0')
-        return 0;
-
-    return 1;
+    return 0;
 }
 
 int ConfigManager_Load(ConfigManager* manager,
@@ -83,12 +99,14 @@ int ConfigManager_Load(ConfigManager* manager,
     int line_number = 0;
 
     ConfigEntry entry;
+    ConfigNodes config_nodes;
+    memset(&config_nodes, 0, sizeof(config_nodes));
 
     while (fgets(line, sizeof(line), p_file))
     {
         line_number++;
 
-        trim(line);
+        Config_Trim(line);
 
         if (line[0] == '\0' || 
             line[0] == ';' || 
@@ -118,7 +136,7 @@ int ConfigManager_Load(ConfigManager* manager,
         }
 
         // Parse Line to key = value
-        if (!ParseLine(line, &entry))
+        if (!Config_ParseLine(line, &entry))
         {
             LH_ERROR(
                 "Invalid config entry at line %d: %s", 
@@ -135,13 +153,55 @@ int ConfigManager_Load(ConfigManager* manager,
             entry.value
         );
 
-        // Build Weapon Params
+        // if the parameter precedes the first section
+        if (current_section[0] == '\0')
+        {
+            LH_ERROR(
+                "Config entry outside of section at line %d",
+                line_number
+            );
+
+            fclose(p_file);
+            return 0;
+        }
+
+        // Create/Find config nodes 
+        ConfigNode* node = 
+            ConfigNodes_GetOrCreate(&config_nodes, current_section);
+
+        if (!node)
+        {
+            LH_ERROR(
+                "Failed to create config node for section '%s' at line %d",
+                current_section,
+                line_number
+            );
+
+            fclose(p_file);
+            return 0;
+        }
+
+        // Apply key/value to node
+        if (!ApplyEntry(node, &entry))
+        {
+            LH_ERROR(
+                "Invalid key/value at line %d: %s = %s",
+                line_number,
+                entry.key,
+                entry.value
+            );
+
+            fclose(p_file);
+            return 0;
+        }
     }
 
     // Close file
     fclose(p_file);
 
     LH_INFO("Config loaded: %s", path);
+
+    // Build Weapon Params
 
     return 1;
 }
