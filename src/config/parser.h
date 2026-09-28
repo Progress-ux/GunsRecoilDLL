@@ -10,6 +10,9 @@ extern "C" {
 void Config_Trim(char* str);
 int Config_ParseLine(const char* line, ConfigEntry* entry);
 
+int Config_ParseFloat(const char* str, float* value);
+int Config_ParseInt(const char* str, int* value);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

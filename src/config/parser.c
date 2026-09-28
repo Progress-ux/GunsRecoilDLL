@@ -1,6 +1,7 @@
 #include "parser.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 
@@ -53,6 +54,52 @@ int Config_ParseLine(const char* line, ConfigEntry* entry)
 
     if (entry->key[0] == '\0' || entry->value[0] == '\0')
         return 0;
+
+    return 1;
+}
+
+int Config_ParseFloat(const char* str, float* value)
+{
+    if (!str || *str == '\0')
+        return 0;
+
+    char *endptr;
+    float val = strtof(str, &endptr);
+
+    if (endptr == str)
+        return 0;
+    
+    while(isspace((unsigned char)*endptr))
+        endptr++;
+
+    if (*endptr != '\0')
+        return 0;
+
+    if (value != NULL)
+        *value = val;
+
+    return 1;
+}
+
+int Config_ParseInt(const char* str, int* value)
+{
+    if (!str || *str == '\0')
+        return 0;
+
+    char *endptr;
+    long val = strtol(str, &endptr, 10);
+
+    if (endptr == str)
+        return 0;
+    
+    while(isspace((unsigned char)*endptr))
+        endptr++;
+
+    if (*endptr != '\0')
+        return 0;
+
+    if (value != NULL)
+        *value = (int)val;
 
     return 1;
 }
