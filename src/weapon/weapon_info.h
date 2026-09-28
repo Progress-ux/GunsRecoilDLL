@@ -3,6 +3,8 @@
 
 #define WEAPON_MAX_ID 32
 
+#include "config/config_value.h"
+
 typedef enum WeaponType
 {
     WEAPON_TYPE_UNKNOWN = 0,
@@ -13,21 +15,21 @@ typedef enum WeaponType
 
 typedef struct RecoilParams
 {
-    float up_base;
-    float lateral_base;
+    ConfigFloat up_base;
+    ConfigFloat lateral_base;
 
-    float up_modifier;
-    float lateral_modifier;
+    ConfigFloat up_modifier;
+    ConfigFloat lateral_modifier;
 
-    float up_max;
-    float lateral_max;
+    ConfigFloat up_max;
+    ConfigFloat lateral_max;
 
-    int direction_change;
+    ConfigInt direction_change;
 } RecoilParams;
 
 typedef struct SpreadParams
 {
-    float spread;
+    ConfigFloat spread;
 } SpreadParams;
 
 typedef struct WeaponParams
