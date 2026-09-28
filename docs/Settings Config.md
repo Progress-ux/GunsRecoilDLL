@@ -195,7 +195,6 @@ recoil.up_max = 10.0
 ; ============================================
 
 [default]
-enabled = 1
 recoil.up_base = 1.0
 recoil.lateral_base = 0.5
 recoil.up_modifier = 1.0
