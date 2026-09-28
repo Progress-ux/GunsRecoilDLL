@@ -2,14 +2,15 @@
 
 #include <string.h>
 
-static ConfigNode* FindNode(
+static ConfigNode* ConfigNodes_Find(
     ConfigNodes* nodes,
     const char* name
 )
 {
-    int i;
+    if (!nodes || !name)
+        return NULL;
 
-    for (i = 0; i < nodes->count; i++)
+    for (int i = 0; i < nodes->count; i++)
     {
         if (strcmp(nodes->nodes[i].name, name) == 0)
             return &nodes->nodes[i];
@@ -37,12 +38,28 @@ static ConfigNode* CreateNode(
     return node;
 }
 
+const ConfigNode* ConfigNodes_FindConst(
+    const ConfigNodes* nodes,
+    const char* name
+)
+{
+    if (!nodes || !name)
+        return NULL;
+
+    for (int i = 0; i < nodes->count; i++)
+    {
+        if (strcmp(nodes->nodes[i].name, name) == 0)
+            return &nodes->nodes[i];
+    }
+    return NULL;
+}
+
 ConfigNode* ConfigNodes_GetOrCreate(
     ConfigNodes* nodes,
     const char* name
 )
 {
-    ConfigNode* node = FindNode(nodes, name);
+    ConfigNode* node = ConfigNodes_Find(nodes, name);
 
     if (node)
         return node;

@@ -22,6 +22,11 @@ typedef struct ConfigNodes
     int count;
 } ConfigNodes;
 
+const ConfigNode* ConfigNodes_FindConst(
+    const ConfigNodes* nodes,
+    const char* name
+);
+
 ConfigNode* ConfigNodes_GetOrCreate(
     ConfigNodes* nodes,
     const char* name
