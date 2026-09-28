@@ -1,32 +1,16 @@
 #ifndef GUNS_RECOIL_CONFIG_NODE_H
 #define GUNS_RECOIL_CONFIG_NODE_H
+
+#include "weapon/weapon_info.h"
+
 #define CONFIG_MAX_NODES 64
-
-typedef struct ConfigEntry 
-{
-    char key[64];
-    char value[64];
-} ConfigEntry;
-
-typedef struct ConfigFloat
-{
-    int set;
-    float value;
-} ConfigFloat;
-
-typedef struct ConfigInt
-{
-    int set;
-    int value;
-} ConfigInt;
 
 typedef struct ConfigNode
 {
     char name[64];
 
-    ConfigFloat recoil_vertical;
-    ConfigFloat recoil_horizontal;
-    ConfigFloat spread_base;
+    RecoilParams recoil;
+    SpreadParams spread;
 
     ConfigInt enabled;
     ConfigInt type;
@@ -38,7 +22,7 @@ typedef struct ConfigNodes
     int count;
 } ConfigNodes;
 
-ConfigNode* GetOrCreateNode(
+ConfigNode* ConfigNodes_GetOrCreate(
     ConfigNodes* nodes,
     const char* name
 );
