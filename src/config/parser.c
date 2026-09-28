@@ -83,23 +83,36 @@ int Config_ParseFloat(const char* str, float* value)
 
 int Config_ParseInt(const char* str, int* value)
 {
-    if (!str || *str == '\0')
+    int sign = 1;
+    int result = 0;
+    const char* p = str;
+
+    if (!str || !value || *str == '\0')
         return 0;
 
-    char *endptr;
-    long val = strtol(str, &endptr, 10);
+    if (*p == '-')
+    {
+        sign = -1;
+        p++;
+    }
+    else if (*p == '+')
+    {
+        p++;
+    }
 
-    if (endptr == str)
+    if (*p == '\0')
         return 0;
-    
-    while(isspace((unsigned char)*endptr))
-        endptr++;
 
-    if (*endptr != '\0')
-        return 0;
+    while (*p)
+    {
+        if (*p < '0' || *p > '9')
+            return 0;
 
-    if (value != NULL)
-        *value = (int)val;
+        result = result * 10 + (*p - '0');
+        p++;
+    }
+
+    *value = result * sign;
 
     return 1;
 }
