@@ -1,7 +1,8 @@
-#include "config/config_manager.h"
 #include "config/config_node.h"
 #include "config/parser.h"
 #include "util/logger.h"
+#include "weapon/weapon_info.h"
+#include "config/config_manager.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -73,6 +74,69 @@ static int ApplyEntry(
     );
 
     return 0;
+}
+
+static int IsWeaponNode(const char* name)
+{
+    if (!name)
+        return 0;
+    return strchr(name, '.') != NULL;
+}
+
+static int BuildWeaponParams(
+    ConfigManager* manager,
+    ConfigNode* node
+)
+{
+    if (!manager || !node)
+        return 0;
+
+    if (!IsWeaponNode(node->name))
+        return 1;
+
+    // Which weapon corresponds to node->name
+    int weapon_id = WeaponInfo_GetId(node->name);
+    if (!weapon_id)
+    {
+        LH_ERROR(
+            "Unknown weapon section: '%s'",
+            node->name
+        );
+        return 0;
+    }
+
+    // Write variables to manager->weapon_params[]
+    WeaponParams* params =
+        &manager->weapon_params[weapon_id];
+
+    params->enabled = node->enabled.value;
+    params->type = node->type.value;
+
+    params->recoil.up_base =
+        node->recoil.up_base.value;
+
+    params->recoil.lateral_base =
+        node->recoil.lateral_base.value;
+
+    params->recoil.up_modifier =
+        node->recoil.up_modifier.value;
+
+    params->recoil.lateral_modifier =
+        node->recoil.lateral_modifier.value;
+
+    params->recoil.up_max =
+        node->recoil.up_max.value;
+
+    params->recoil.lateral_max =
+        node->recoil.lateral_max.value;
+
+    params->recoil.direction_change =
+        node->recoil.direction_change.value;
+
+    params->spread.spread =
+        node->spread.spread.value;
+
+    return 1;
 }
 
 static int GetParentName(
@@ -335,6 +399,14 @@ int ConfigManager_Load(ConfigManager* manager,
         );
 
         // Build Weapon Params
+        if (!BuildWeaponParams(manager, &resolved))
+        {
+            LH_ERROR(
+                "Failed to build weapon params from node '%s'",
+                resolved.name
+            );
+            return 0;
+        }
     }
 
     return 1;
