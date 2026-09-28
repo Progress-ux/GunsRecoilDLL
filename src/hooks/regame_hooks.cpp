@@ -27,6 +27,16 @@ namespace
         int direction_change
     )
     {
+        GunsRecoil_OnKickBack(
+            pThis,
+            up_base,
+            lateral_base,
+            up_modifier,
+            lateral_modifier,
+            up_max,
+            lateral_max,
+            direction_change
+        );
         chain->callNext(
             pThis,
             up_base,
