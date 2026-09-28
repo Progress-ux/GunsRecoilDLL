@@ -40,8 +40,12 @@ typedef enum WeaponType
 {
     WEAPON_TYPE_UNKNOWN = 0,
     WEAPON_TYPE_PISTOL,
+    WEAPON_TYPE_SMG,
     WEAPON_TYPE_RIFLE,
-    WEAPON_TYPE_SHOTGUN
+    WEAPON_TYPE_SHOTGUN,
+    WEAPON_TYPE_SNIPER,
+    WEAPON_TYPE_MACHINEGUN
+
 } WeaponType;
 
 typedef struct RecoilParams
@@ -91,6 +95,7 @@ typedef struct WeaponParams
     WeaponSpread spread;
 } WeaponParams;
 
+WeaponType WeaponInfo_GetType(const char* name);
 int WeaponInfo_GetId(const char* name);
 
 #endif
