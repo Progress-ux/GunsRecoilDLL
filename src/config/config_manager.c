@@ -75,6 +75,119 @@ static int ApplyEntry(
     return 0;
 }
 
+static int GetParentName(
+    const char* name,
+    char* parent,
+    size_t parent_size
+)
+{
+    if (!name || !parent || parent_size == 0)
+        return 0;
+
+    if (strcmp(name, "default") == 0)
+        return 0;
+
+    const char* dot = strrchr(name, '.');
+
+    if (!dot)
+    {
+        strncpy(parent, "default", parent_size - 1);
+        parent[parent_size - 1] = '\0';
+        return 1;
+    }
+
+    size_t lenght = (size_t)(dot - name);
+
+    if (lenght == 0 || lenght >= parent_size)
+        return 0;
+    
+    memcpy(parent, name, lenght);
+    parent[lenght] = '\0';
+
+    return 1;
+}
+
+static void MergeNode(
+    ConfigNode* dst,
+    const ConfigNode* src
+)
+{
+    if (src->recoil.up_base.set)
+        dst->recoil.up_base = src->recoil.up_base;
+
+    if (src->recoil.lateral_base.set)
+        dst->recoil.lateral_base = src->recoil.lateral_base;
+
+    if (src->recoil.up_modifier.set)
+        dst->recoil.up_modifier = src->recoil.up_modifier;
+
+    if (src->recoil.lateral_modifier.set)
+        dst->recoil.lateral_modifier = src->recoil.lateral_modifier;
+
+    if (src->recoil.up_max.set)
+        dst->recoil.up_max = src->recoil.up_max;
+
+    if (src->recoil.lateral_max.set)
+        dst->recoil.lateral_max = src->recoil.lateral_max;
+
+    if (src->recoil.direction_change.set)
+        dst->recoil.direction_change = src->recoil.direction_change;
+
+    if (src->spread.spread.set)
+        dst->spread.spread = src->spread.spread;
+
+    if (src->enabled.set)
+        dst->enabled = src->enabled;
+
+    if (src->type.set)
+        dst->type = src->type;
+}
+
+static int ResolveNode(
+    const ConfigNodes* nodes,
+    const ConfigNode* node,
+    ConfigNode* result
+)
+{
+    if (!nodes || !node || !result)
+        return 0;
+
+    memset(result, 0, sizeof(*result));
+
+    char parent_name[64];
+
+    if (!GetParentName(node->name, parent_name, sizeof(parent_name)))
+    {
+        *result = *node;
+        return 1;
+    }
+
+    const ConfigNode* parent =
+        ConfigNodes_FindConst(nodes, parent_name);
+
+    if (!parent)
+    {
+        LH_ERROR(
+            "Parent node '%s' not found for '%s'",
+            parent_name,
+            node->name
+        );
+        return 0;
+    }
+
+    ConfigNode resolved_parent;
+    if (!ResolveNode(nodes, parent, &resolved_parent))
+        return 0;
+
+    *result = resolved_parent;
+
+    MergeNode(result, node);
+
+    strcpy(result->name, node->name);
+
+    return 1;
+}
+
 int ConfigManager_Load(ConfigManager* manager,
                        const char* path)
 {
@@ -92,7 +205,7 @@ int ConfigManager_Load(ConfigManager* manager,
         return 0;
     }
    
-    // Temp ConfigNode
+    // Temporary config nodes
     char line[128];
     char current_section[64] = "";
 
@@ -201,7 +314,28 @@ int ConfigManager_Load(ConfigManager* manager,
 
     LH_INFO("Config loaded: %s", path);
 
-    // Build Weapon Params
+    // Resolve node
+    for (int i = 0; i < config_nodes.count; i++)
+    {
+        ConfigNode resolved;
+        if (!ResolveNode(&config_nodes, &config_nodes.nodes[i], &resolved))
+        {
+            LH_ERROR(
+                "Failed to resolve node '%s'",
+                config_nodes.nodes[i].name
+            );
+            return 0;
+        }
+        LH_DEBUG(
+            "Resolved node: %s | up_base=%.2f lateral_base=%.2f spread=%.2f",
+            resolved.name,
+            resolved.recoil.up_base.value,
+            resolved.recoil.lateral_base.value,
+            resolved.spread.spread.value
+        );
+
+        // Build Weapon Params
+    }
 
     return 1;
 }
