@@ -4,9 +4,13 @@
 #include "config/config_manager.h"
 #include "hooks/regame_loader.h"
 #include "util/logger.h"
+#include "core/config.h"
 
-static ConfigManager g_config_manager;
+#if defined (LH_LOG_TO_REMOTE_SERVER)
+#define GUNS_RECOIL_CONFIG "/game/cstrike/guns-recoil-config.cfg"
+#else
 #define GUNS_RECOIL_CONFIG "guns-recoil-config.cfg"
+#endif
 
 // Must provide at least one of these..
 static META_FUNCTIONS gMetaFunctionTable = {
