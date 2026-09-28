@@ -110,7 +110,7 @@ static int BuildWeaponParams(
         &manager->weapon_params[weapon_id];
 
     params->enabled = node->enabled.value;
-    params->type = node->type.value;
+    params->type = WeaponInfo_GetType(node->name);
 
     params->recoil.up_base =
         node->recoil.up_base.value;
@@ -297,12 +297,18 @@ int ConfigManager_Load(ConfigManager* manager,
         // Section
         if (line[0] == '[' && len >= 2 && line[len - 1] == ']')
         {
-            if (sscanf(line, "[%63[^]]", current_section) != 1)
+            size_t section_len = len - 2;
+
+            if (section_len == 0 || section_len >= sizeof(current_section))
             {
                 LH_ERROR("Invalid section at line %d", line_number);
                 fclose(p_file);
                 return 0;
             }
+
+            memcpy(current_section, line + 1, section_len);
+
+            current_section[section_len] = '\0';
 
             LH_DEBUG(
                 "Section: [%s]",
