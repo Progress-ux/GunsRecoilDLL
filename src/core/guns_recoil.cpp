@@ -5,6 +5,7 @@
 #include "config/config_manager.h"
 #include "core/config.h"
 #include "util/logger.h"
+#include "vector.h"
 #include "weapon/weapon_info.h"
 
 #define APPLY_IF_SET(param, target) \
@@ -54,7 +55,6 @@ void GunsRecoil_OnKickBack(
 )
 {
     const int weaponId = regame::GetWeaponId(pThis);
-    LH_DEBUG("[OnKickBack] weaponId: %d", weaponId);
 
     const WeaponParams* params = 
         ConfigManager_GetWeaponParams(&g_config_manager, weaponId);
