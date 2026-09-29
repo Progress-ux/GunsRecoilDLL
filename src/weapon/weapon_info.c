@@ -16,6 +16,15 @@ WeaponType WeaponInfo_GetType(const char* name)
     if (strncmp(name, "shotgun.", 8) == 0)
         return WEAPON_TYPE_SHOTGUN;
 
+    if (strncmp(name, "smg.", 4) == 0)
+        return WEAPON_TYPE_SMG;
+
+    if (strncmp(name, "sniper.", 7) == 0)
+        return WEAPON_TYPE_SNIPER;
+
+    if (strncmp(name, "machinegun.", 11) == 0)
+        return WEAPON_TYPE_MACHINEGUN;
+
     return WEAPON_TYPE_UNKNOWN;
 }
 
