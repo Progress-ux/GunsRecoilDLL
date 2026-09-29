@@ -2,6 +2,7 @@
 
 struct Vector;
 class CBaseEntity;
+class CBasePlayerWeapon;
 struct entvars_s;
 using entvars_t = entvars_s;
 
@@ -88,9 +89,9 @@ namespace regame
 	class IReGameHookRegistry_CSGameRules_ServerDeactivate;
 	class IReGameHookRegistry_CSGameRules_CheckMapConditions;
 	class IReGameHookRegistry_CSGameRules_CleanUpMap;
-	// class IReGameHookRegistry_CSGameRules_RestartRound;
+	class IReGameHookRegistry_CSGameRules_RestartRound;
 
-	// class IReGameHookRegistry_CSGameRules_CheckWinConditions;
+	class IReGameHookRegistry_CSGameRules_CheckWinConditions;
 
 	class IReGameHookRegistry_CSGameRules_RemoveGuns;
 	class IReGameHookRegistry_CSGameRules_GiveC4;
@@ -160,7 +161,7 @@ namespace regame
 	class IReGameHookRegistry_CBasePlayer_CheckTimeBasedDamage;
 	class IReGameHookRegistry_CBasePlayer_EntSelectSpawnPoint;
 	class IReGameHookRegistry_CBasePlayerWeapon_ItemPostFrame;
-	class IReGameHookRegistry_CBasePlayerWeapon_KickBack;
+	// class IReGameHookRegistry_CBasePlayerWeapon_KickBack;
 	class IReGameHookRegistry_CBasePlayerWeapon_SendWeaponAnim;
 	class IReGameHookRegistry_CSGameRules_SendDeathMessage;
 	class IReGameHookRegistry_CBasePlayer_PlayerDeathThink;
@@ -169,35 +170,6 @@ namespace regame
 	class IReGameHookRegistry_CBasePlayer_UpdateStatusBar;
 	class IReGameHookRegistry_CBasePlayer_TakeDamageImpulse;
 	class IReGameHookRegistry_SendSayMessage;
-
-	template<typename t_ret, typename ...t_args>
-	class IHookChain
-	{
-	protected:
-		virtual ~IHookChain() {}
-	public:
-		virtual t_ret callNext(t_args... args) = 0;
-		virtual t_ret callOriginal(t_args... args) = 0;
-	};
-
-    template<typename t_ret, typename ...t_args>
-    class IHookChainRegistry
-    {
-    public:
-        typedef t_ret(*hookfunc_t)(
-            IHookChain<t_ret, t_args...>*,
-            t_args...
-        );
-
-        virtual void registerHook(
-            hookfunc_t hook,
-            int priority = HC_PRIORITY_DEFAULT
-        ) = 0;
-
-        virtual void unregisterHook(
-            hookfunc_t hook
-        ) = 0;
-    };
 
     template<typename t_ret, typename t_class, typename ...t_args>
     class IHookChainClass
@@ -236,13 +208,6 @@ namespace regame
         ) = 0;
     };
 
-    using IReGameHookRegistry_CSGameRules_CheckWinConditions = 
-        IHookChainRegistry<void>;
-	using CheckWinConditionsRegistry = IHookChainRegistry<void>;
-
-    using IReGameHookRegistry_CSGameRules_RestartRound = 
-        IHookChainRegistry<void>;
-
     using IReGameHook_CBaseEntity_FireBullets3 = 
         IHookChainClass<
             Vector &,
@@ -274,6 +239,33 @@ namespace regame
             float,
             entvars_t *,
             bool,
+            int
+        >;
+
+    using IReGameHook_CBasePlayerWeapon_KickBack = 
+        IHookChainClass<
+            void,
+            CBasePlayerWeapon,
+            float,
+            float,
+            float,
+            float,
+            float,
+            float,
+            int
+        >;
+
+
+    using IReGameHookRegistry_CBasePlayerWeapon_KickBack =
+        IHookChainRegistryClass<
+            void,
+            CBasePlayerWeapon,
+            float,
+            float,
+            float,
+            float,
+            float,
+            float,
             int
         >;
 
