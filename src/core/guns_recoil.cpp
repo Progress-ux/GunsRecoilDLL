@@ -4,9 +4,12 @@
 
 #include "config/config_manager.h"
 #include "core/config.h"
-#include "core/recoil_math.h"
 #include "util/logger.h"
 #include "weapon/weapon_info.h"
+
+#define APPLY_IF_SET(param, target) \
+    if ((param).set)                \
+        (target) = (param).value
 
 void GunsRecoil_FireBullets3(
     CBaseEntity* pThis,
@@ -27,29 +30,18 @@ void GunsRecoil_FireBullets3(
         regame::GetActiveItem(pThis)
     );
 
-    switch (weaponId)
+    const WeaponParams* params = 
+        ConfigManager_GetWeaponParams(&g_config_manager, weaponId);
+
+    if (!params)
     {
-        case weapon_id::Glock18:
-            recoil::ApplyVertical(vecDirShooting, 1.0f);
-            break;
-
-        case weapon_id::USP:
-            recoil::ApplyVertical(vecDirShooting, 1.0f);
-            break;
-
-        case weapon_id::AK47:
-            recoil::ApplyVertical(vecDirShooting, 1.0f);
-            break;
-
-        case weapon_id::M4A1:
-            recoil::ApplyVertical(vecDirShooting, 1.0f);
-            break;
-
-        default:
-            LH_DEBUG("[FireBullets3] unknown weapon id = %d", weaponId);
-            break;
+        LH_DEBUG("[OnKickBack] no config for weaponId=%d", weaponId);
+        return;
     }
+
+    APPLY_IF_SET(params->spread.spread, vecSpread);
 }
+
 void GunsRecoil_OnKickBack(
     CBasePlayerWeapon* pThis,
     float& up_base,
@@ -73,11 +65,11 @@ void GunsRecoil_OnKickBack(
         return;
     }
 
-    up_base          = params->recoil.up_base;
-    lateral_base     = params->recoil.lateral_base;
-    up_modifier      = params->recoil.up_modifier;
-    lateral_modifier = params->recoil.lateral_modifier;
-    up_max           = params->recoil.up_max;
-    lateral_max      = params->recoil.lateral_max;
-    direction_change = params->recoil.direction_change;
+    APPLY_IF_SET(params->recoil.up_base, up_base);
+    APPLY_IF_SET(params->recoil.lateral_base, lateral_base);
+    APPLY_IF_SET(params->recoil.up_modifier, up_modifier);
+    APPLY_IF_SET(params->recoil.lateral_modifier, lateral_modifier);
+    APPLY_IF_SET(params->recoil.up_max, up_max);
+    APPLY_IF_SET(params->recoil.lateral_max, lateral_max);
+    APPLY_IF_SET(params->recoil.direction_change, direction_change);
 }

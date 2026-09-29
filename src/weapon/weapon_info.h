@@ -67,32 +67,13 @@ typedef struct SpreadParams
     ConfigFloat spread;
 } SpreadParams;
 
-typedef struct WeaponRecoil
-{
-    float up_base;
-    float lateral_base;
-
-    float up_modifier;
-    float lateral_modifier;
-
-    float up_max;
-    float lateral_max;
-
-    int direction_change;
-} WeaponRecoil;
-
-typedef struct WeaponSpread
-{
-    float spread;
-} WeaponSpread;
-
 typedef struct WeaponParams
 {
     int enabled;
     WeaponType type;
 
-    WeaponRecoil recoil;
-    WeaponSpread spread;
+    RecoilParams recoil;
+    SpreadParams spread;
 } WeaponParams;
 
 WeaponType WeaponInfo_GetType(const char* name);

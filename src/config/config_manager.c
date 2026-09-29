@@ -113,28 +113,28 @@ static int BuildWeaponParams(
     params->type = WeaponInfo_GetType(node->name);
 
     params->recoil.up_base =
-        node->recoil.up_base.value;
+        node->recoil.up_base;
 
     params->recoil.lateral_base =
-        node->recoil.lateral_base.value;
+        node->recoil.lateral_base;
 
     params->recoil.up_modifier =
-        node->recoil.up_modifier.value;
+        node->recoil.up_modifier;
 
     params->recoil.lateral_modifier =
-        node->recoil.lateral_modifier.value;
+        node->recoil.lateral_modifier;
 
     params->recoil.up_max =
-        node->recoil.up_max.value;
+        node->recoil.up_max;
 
     params->recoil.lateral_max =
-        node->recoil.lateral_max.value;
+        node->recoil.lateral_max;
 
     params->recoil.direction_change =
-        node->recoil.direction_change.value;
+        node->recoil.direction_change;
 
     params->spread.spread =
-        node->spread.spread.value;
+        node->spread.spread;
 
     return 1;
 }
