@@ -28,10 +28,10 @@ static META_FUNCTIONS gMetaFunctionTable = {
 plugin_info_t Plugin_info = {
 	META_INTERFACE_VERSION,	// ifvers
 	"Guns Recoil",	// name
-	"0.1",	// version
+	"1.0.0",	// version
 	"2026/08/20",	// date
 	"Progress",	// author
-	"",	// url
+	"https://github.com/Progress-ux/GunsRecoilDLL",	// url
 	"GUNS",	// logtag, all caps please
 	PT_ANYTIME,	// (when) loadable
 	PT_ANYPAUSE,	// (when) unloadable
